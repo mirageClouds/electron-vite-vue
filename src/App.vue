@@ -1,49 +1,57 @@
-<script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
+<script lang="ts" setup>
+import {ref, Ref} from 'vue'
+
+let second: Ref<number> = ref(60)
+let minutes: Ref<number> = ref(1)
+let hours: Ref<number> = ref(1)
+let ifFirst: Ref<boolean> = ref(false)
+const times = ref(Date.now())
+
+
+const handelClickStart: (e: any) => void = (e) => {
+  new Notification('倒计时', {body: '倒计时开始'})
+  times.value = Date.now();
+  ifFirst.value = true;
+  let time = second.value * 1000 + minutes.value * 60000 + hours.value * 3600000;
+  times.value += time;
+  handelButton(e)
+}
+
+const handelClickEnd: (e: any) => void = (e) => {
+  times.value = Date.now()
+  handelButton(e)
+}
+
+const countDownEnd: () => void = () => {
+  if (ifFirst.value) {
+    new Notification('倒计时', {body: '倒计时结束'})
+  }
+}
+
+const handelButton: (e: any) => void = (e) => {
+  let target = e.target
+  if (target.nodeName === 'BUTTON' || target.nodeName === 'SPAN') {
+    target.parentNode.blur()
+  }
+  target.blur()
+}
+
 </script>
 
 <template>
-  <div>
-    <a href="https://www.electronjs.org/" target="_blank">
-      <img src="./assets/electron.svg" class="logo electron" alt="Electron logo" />
-    </a>
-    <a href="https://vitejs.dev/" target="_blank">
-      <img src="./assets/vite.svg" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://vuejs.org/" target="_blank">
-      <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-    </a>
-  </div>
-  <HelloWorld msg="Electron + Vite + Vue" />
-  <div class="flex-center">
-    Place static files into the <code>/public</code> folder
-    <img style="width: 2.4em; margin-left: .4em;" src="/logo.svg" alt="Logo">
-  </div>
+  <el-button :plain="true" type="success" @click="handelClickStart">开始倒计时</el-button>
+  <el-button :plain="true" type="warning" @click="handelClickEnd">关闭倒计时</el-button>
+  <el-countdown :value="times" style="margin-top: 30px" @finish="countDownEnd"/>
 </template>
 
 <style>
-.flex-center {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+
+@font-face {
+  font-family: 'LXGWWenKaiGBScreen';
+  src: url("font/LXGWWenKaiGBScreen.ttf")
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-
-.logo.electron:hover {
-  filter: drop-shadow(0 0 2em #9FEAF9);
-}
-
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
+* {
+  font-family: 'LXGWWenKaiGBScreen', serif;
 }
 </style>
